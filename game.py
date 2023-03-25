@@ -9,10 +9,10 @@ class Game:
         self.board = Board()
 
     def initial_setup(self):
-        self.graphics.setup()
+        self.graphics.setup(self.board)
 
     def end_game(self):
         pygame.quit()
     
     def update(self):
-        self.graphics.draw_all()
+        self.graphics.draw_all(self.board)
