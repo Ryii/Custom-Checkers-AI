@@ -8,15 +8,15 @@ CAPTION = 'Checkers'
 FPS = 60
 WIN_WIDTH, WIN_HEIGHT = 800, 800
 NUM_ROWS, NUM_COLS = 8, 8
-SQUARE_WIDTH, SQUARE_HEIGHT = WIN_WIDTH // NUM_ROWS, WIN_HEIGHT // NUM_COLS
+SQUARE_SIZE = WIN_WIDTH // NUM_ROWS
 PIECE_PADDING = 15
 
 FONT = pygame.font.Font('freesansbold.ttf', 32)
 CROWN = pygame.transform.scale(pygame.image.load('imgs/crown.png'), (44, 25)) # to change
 PIECE_1 = pygame.transform.scale(pygame.image.load('imgs/red_piece.png'), 
-                                (SQUARE_WIDTH - PIECE_PADDING, SQUARE_HEIGHT - PIECE_PADDING)) # to change
+                                (SQUARE_SIZE - PIECE_PADDING, SQUARE_SIZE - PIECE_PADDING)) # to change
 PIECE_2 = pygame.transform.scale(pygame.image.load('imgs/white_piece.png'), 
-                                (SQUARE_WIDTH - PIECE_PADDING, SQUARE_HEIGHT - PIECE_PADDING)) # to change
+                                (SQUARE_SIZE - PIECE_PADDING, SQUARE_SIZE - PIECE_PADDING)) # to change
 
 ## COLORS(R, G, B) ##
 

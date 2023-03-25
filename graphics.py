@@ -15,7 +15,7 @@ class Graphics:
         for row in range(NUM_ROWS):
             for col in range(NUM_COLS):
                 if (row + col) % 2 == 1:
-                    pygame.draw.rect(self.screen, BG_COLOR_ALT, (row * SQUARE_WIDTH, col * SQUARE_HEIGHT, SQUARE_WIDTH, SQUARE_HEIGHT))
+                    pygame.draw.rect(self.screen, BG_COLOR_ALT, (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 
     def draw_pieces(self, Board):
         for row in range(NUM_ROWS):
