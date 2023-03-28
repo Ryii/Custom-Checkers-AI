@@ -5,9 +5,9 @@ from constants import SQUARE_SIZE
 
 class Game:
     def __init__(self):
-
         self.graphics = Graphics()
         self.board = Board()
+        self.selected_piece = None
         self.turn = 1
         self.finished = False
 
