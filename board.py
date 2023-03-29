@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from constants import NUM_ROWS, NUM_COLS
 from piece import Piece
 
@@ -42,6 +43,16 @@ class Board:
                 self.team_2_kings += 1
                 self.team_2_men -= 2
 
+    # def get_possible_moves(self, row, col):
+    #     possible_moves = np.array([])
+    #     possible_removals = np.array([])
+    #     possible_steps = self.get_steps(row, col)
+    #     possible_jumps, removals = self.get_jumps(row, col)   
+
+    #     possible_moves = np.append(possible_moves, [possible_steps], axis=0)
+    #     possible_removals = np.append() * len(possible_steps)
+    #     return possible_moves, possible_removals
+
     def get_possible_moves(self, row, col):
         possible_moves = []
         possible_removals = []
@@ -75,6 +86,12 @@ class Board:
         possible_jumps = []
         removals = []
         return possible_jumps, removals
+    
+    def left_move(self):
+        return
+    
+    def right_move(self):
+        return
     
     def remove_positions(self, removals, from_team):
         for row, col in removals:
