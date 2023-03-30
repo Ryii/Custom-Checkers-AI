@@ -63,22 +63,60 @@ class Board:
         possible_removals += [] * len(possible_steps)
         return possible_moves, possible_removals
     
-    def get_steps(self, row, col):
-        possible_steps = []
+    def get_all_moves(self, row, col, team, is_king):
+        possible_steps = {}
 
         # check for steps going up one row
-        if row != 0 and (self.board[row][col].team == 1 or self.board[row][col].is_king):
+        if row != 0 and (team == 1 or is_king):
             if col - 1 >= 0 and self.board[row - 1][col - 1] == None:
-                possible_steps.append((row - 1, col - 1))
+                possible_steps.update({(row - 1, col - 1): []})
             if col + 1 < 8 and self.board[row - 1][col + 1] == None:
-                possible_steps.append((row - 1, col + 1))
+                possible_steps.update({(row - 1, col + 1): []})
 
         # check for steps going down one row
-        if row != 7 and (self.board[row][col].team == 2 or self.board[row][col].is_king):
+        if row != 7 and (team == 2 or is_king):
             if col - 1 >= 0 and self.board[row + 1][col - 1] == None:
-                possible_steps.append((row + 1, col - 1))
+                possible_steps.update({(row + 1, col - 1): []})
             if col + 1 < 8 and self.board[row + 1][col + 1] == None:
-                possible_steps.append((row + 1, col + 1))
+                possible_steps.update({(row + 1, col + 1): []})
+
+        # check for jumps going left
+
+
+        return possible_steps
+    
+    def get_left_jumps(self, row, col, pieces_skipped, team, is_king):
+        jumps_dict = {} # { landing square: piece(s) skipped }
+
+        if len(pieces_skipped) == 3:
+            # terminate
+            return
+
+        if row - 2 >= 0 and (team == 1 or is_king):
+            # move top left
+            if col - 2 >= 0 and self.board[row - 1][col - 1] != None and self.board[row - 1][col - 1].team != team and self.board[row - 2][col - 2] == None:
+                pieces_skipped.append([row, col])
+                # callback
+        
+        return jumps_dict
+
+    
+    def get_steps(self, row, col, team, is_king):
+        possible_steps = {}
+
+        # check for steps going up one row
+        if row != 0 and (team == 1 or is_king):
+            if col - 1 >= 0 and self.board[row - 1][col - 1] == None:
+                possible_steps.update({(row - 1, col - 1): []})
+            if col + 1 < 8 and self.board[row - 1][col + 1] == None:
+                possible_steps.update({(row - 1, col + 1): []})
+
+        # check for steps going down one row
+        if row != 7 and (team == 2 or is_king):
+            if col - 1 >= 0 and self.board[row + 1][col - 1] == None:
+                possible_steps.update({(row - 1, col + 1): []})
+            if col + 1 < 8 and self.board[row + 1][col + 1] == None:
+                possible_steps.update({(row - 1, col + 1): []})
 
         return possible_steps
     
@@ -94,7 +132,7 @@ class Board:
         return
     
     def remove_positions(self, removals, from_team):
-        for row, col in removals:
+        for (row, col) in removals:
             if from_team == 1:
                 if self.board[row][col].is_king:
                     self.team_1_kings -= 1
