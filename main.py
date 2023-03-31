@@ -18,7 +18,7 @@ def main():
             game.players_move()
             game.update()
 
-        if game.finished:
+        if game.is_finished:
             run = False
 
     pygame.quit()

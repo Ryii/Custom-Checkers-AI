@@ -7,13 +7,9 @@ class Piece:
         self.image = PIECE_1 if self.team == 1 else PIECE_2
         self.is_king = False
 
-    def kingify(self):
-        self.is_king = True
-
     def draw(self, row, col, screen):
-        x = SQUARE_SIZE * col + SQUARE_SIZE / 2
-        y = SQUARE_SIZE * row + SQUARE_SIZE / 2
-        screen.blit(self.image, (x - self.image.get_width() / 2, y - self.image.get_height() / 2))
+        x = SQUARE_SIZE * col + SQUARE_SIZE // 2
+        y = SQUARE_SIZE * row + SQUARE_SIZE // 2
+        screen.blit(self.image, (x - self.image.get_width() // 2, y - self.image.get_height() // 2))
         if self.is_king:
-            screen.blit(CROWN, (x - CROWN.get_width() / 2, y - CROWN.get_height() / 2))
-        # print('row:', row, ', col:', col, ', x:', x, ', y:', y, self.team)
+            screen.blit(CROWN, (x - CROWN.get_width() // 2, y - CROWN.get_height() // 2))

@@ -20,7 +20,7 @@ class Graphics:
     def draw_pieces(self, Board):
         for row in range(NUM_ROWS):
             for col in range(NUM_COLS):
-                if Board.board[row][col] != None:
+                if Board.board[row][col]:
                     Board.board[row][col].draw(row, col, self.screen)
 
     ## SHAMELESSLY COPIED FROM TIM ##

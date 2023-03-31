@@ -1,16 +1,13 @@
-import pygame
-import numpy as np
 from constants import NUM_ROWS, NUM_COLS
 from piece import Piece
 
 class Board:
     def __init__(self):
-        ## 2D array of pieces ##
-        self.board = self.new_board()
-        self.team_1_men = self.team_2_men = 12
+        self.board = self.new_board()      
+        self.team_1_pieces = self.team_2_pieces = 12
         self.team_1_kings = self.team_2_kings = 0
 
-    def new_board(self):
+    def new_board(self):   ## 2D array of pieces ##
         new_board = []
         for row in range(NUM_ROWS):
             new_row = []
@@ -23,125 +20,128 @@ class Board:
                     new_row.append(Piece(1))
             new_board.append(new_row)
         return new_board
-
-    def print_board(self): # for testing purposes
-        for x in self.board:
-            for y in x:
-                print(y.team, end='') if y != None else print(0, end='')
-            print()
-
-    def move(self, piece, start_row, start_col, end_row, end_col):
-        self.board[end_row, end_col] = piece
-        self.board[start_row, start_col] = None
-
-        if (end_row == 0 or end_row == NUM_ROWS - 1) and piece.is_king == False:
-            piece.kingify()
-            if piece.team == 1:
-                self.team_1_kings += 1
-                self.team_1_men -= 1
-            else:
-                self.team_2_kings += 1
-                self.team_2_men -= 2
-
-    # def get_possible_moves(self, row, col):
-    #     possible_moves = np.array([])
-    #     possible_removals = np.array([])
-    #     possible_steps = self.get_steps(row, col)
-    #     possible_jumps, removals = self.get_jumps(row, col)   
-
-    #     possible_moves = np.append(possible_moves, [possible_steps], axis=0)
-    #     possible_removals = np.append() * len(possible_steps)
-    #     return possible_moves, possible_removals
-
-    def get_possible_moves(self, row, col):
-        possible_moves = []
-        possible_removals = []
-        possible_steps = self.get_steps(row, col)
-        possible_jumps, removals = self.get_jumps(row, col)   
-
-        possible_moves += possible_steps
-        possible_removals += [] * len(possible_steps)
-        return possible_moves, possible_removals
     
-    def get_all_moves(self, row, col, team, is_king):
-        possible_steps = {}
+    def get_possible_moves(self, row, col, team, is_king):
+        possible_moves = {}
 
-        # check for steps going up one row
-        if row != 0 and (team == 1 or is_king):
-            if col - 1 >= 0 and self.board[row - 1][col - 1] == None:
-                possible_steps.update({(row - 1, col - 1): []})
-            if col + 1 < 8 and self.board[row - 1][col + 1] == None:
-                possible_steps.update({(row - 1, col + 1): []})
+        steps = self.get_steps(row, col, team, is_king)
+        possible_moves.update(steps)
+        jumps = self.get_jumps(row, col, [], team, is_king)
+        possible_moves.update(jumps)
 
-        # check for steps going down one row
-        if row != 7 and (team == 2 or is_king):
-            if col - 1 >= 0 and self.board[row + 1][col - 1] == None:
-                possible_steps.update({(row + 1, col - 1): []})
-            if col + 1 < 8 and self.board[row + 1][col + 1] == None:
-                possible_steps.update({(row + 1, col + 1): []})
-
-        # check for jumps going left
-
-
-        return possible_steps
-    
-    def get_left_jumps(self, row, col, pieces_skipped, team, is_king):
-        jumps_dict = {} # { landing square: piece(s) skipped }
-
-        if len(pieces_skipped) == 3:
-            # terminate
-            return
-
-        if row - 2 >= 0 and (team == 1 or is_king):
-            # move top left
-            if col - 2 >= 0 and self.board[row - 1][col - 1] != None and self.board[row - 1][col - 1].team != team and self.board[row - 2][col - 2] == None:
-                pieces_skipped.append([row, col])
-                # callback
-        
-        return jumps_dict
-
+        return possible_moves
     
     def get_steps(self, row, col, team, is_king):
-        possible_steps = {}
+        steps = {}
 
         # check for steps going up one row
         if row != 0 and (team == 1 or is_king):
             if col - 1 >= 0 and self.board[row - 1][col - 1] == None:
-                possible_steps.update({(row - 1, col - 1): []})
+                steps.update({(row - 1, col - 1): []})
             if col + 1 < 8 and self.board[row - 1][col + 1] == None:
-                possible_steps.update({(row - 1, col + 1): []})
+                steps.update({(row - 1, col + 1): []})
 
         # check for steps going down one row
         if row != 7 and (team == 2 or is_king):
             if col - 1 >= 0 and self.board[row + 1][col - 1] == None:
-                possible_steps.update({(row - 1, col + 1): []})
+                steps.update({(row + 1, col - 1): []})
             if col + 1 < 8 and self.board[row + 1][col + 1] == None:
-                possible_steps.update({(row - 1, col + 1): []})
+                steps.update({(row + 1, col + 1): []})
 
-        return possible_steps
+        return steps
     
-    def get_jumps(self):
-        possible_jumps = []
-        removals = []
-        return possible_jumps, removals
+    def get_jumps(self, row: int, col: int, jumped: list, team: int, is_king: bool) -> dict:
+        jumps_dict = {}
+
+        # force terminate if men jumped three times (and no restriction on king)
+        if jumped and len(jumped) == 3 and not is_king:
+            return jumps_dict
+
+        if row - 2 >= 0 and (team == 1 or is_king):
+            # top left
+            if col - 2 >= 0 and self.board[row - 1][col - 1] and self.board[row - 1][col - 1].team != team and not self.board[row - 2][col - 2] and [row - 1, col - 1] not in jumped:
+                new_jumped = jumped + [[row - 1, col - 1]]
+                jumps_dict.update({(row - 2, col - 2): new_jumped})
+                jumps_dict.update(self.get_jumps(row - 2, col - 2, new_jumped, team, is_king))
+            # top right
+            if col + 2 <= 7 and self.board[row - 1][col + 1] and self.board[row - 1][col + 1].team != team and not self.board[row - 2][col + 2] and [row - 1, col + 1] not in jumped:
+                new_jumped = jumped + [[row - 1, col + 1]]
+                jumps_dict.update({(row - 2, col + 2): new_jumped})
+                jumps_dict.update(self.get_jumps(row - 2, col + 2, new_jumped, team, is_king))
+
+        if row + 2 <= 7 and (team == 2 or is_king):
+            # bottom left
+            if col - 2 >= 0 and self.board[row + 1][col - 1] and self.board[row + 1][col - 1].team != team and not self.board[row + 2][col - 2] and [row + 1, col - 1] not in jumped:
+                new_jumped = jumped + [[row + 1, col - 1]]
+                jumps_dict.update({(row + 2, col - 2): new_jumped})
+                jumps_dict.update(self.get_jumps(row + 2, col - 2, new_jumped, team, is_king))
+            # bottom right
+            if col + 2 <= 7 and self.board[row + 1][col + 1] and self.board[row + 1][col + 1].team != team and not self.board[row + 2][col + 2] and [row + 1, col + 1] not in jumped:
+                new_jumped = jumped + [[row + 1, col + 1]]
+                jumps_dict.update({(row + 2, col + 2): new_jumped})
+                jumps_dict.update(self.get_jumps(row + 2, col + 2, new_jumped, team, is_king))
+        
+        return jumps_dict
     
-    def left_move(self):
-        return
-    
-    def right_move(self):
-        return
-    
-    def remove_positions(self, removals, from_team):
-        for (row, col) in removals:
-            if from_team == 1:
-                if self.board[row][col].is_king:
-                    self.team_1_kings -= 1
-                else:
-                    self.team_1_men -= 1
-            else:
+    def remove_positions(self, removals, turn):
+        for [row, col] in removals:
+            if turn == 1:
+                self.team_2_pieces -= 1
                 if self.board[row][col].is_king:
                     self.team_2_kings -= 1
-                else:
-                    self.team_2_men -= 1
+            else:
+                self.team_1_pieces -= 1
+                if self.board[row][col].is_king:
+                    self.team_1_kings -= 1
+                    
             self.board[row][col] = None
-            
+
+    def is_winner(self):
+        if self.team_1_pieces <= 0:
+            return 2
+        if self.team_2_pieces <= 0:
+            return 1
+        return 0
+
+########################
+# Feature calculations #
+########################
+
+    def get_piece_margin(self, turn):
+        return (self.team_1_pieces - self.team_2_pieces) if turn == 1 else (self.team_2_pieces - self.team_1_pieces)
+
+    def get_king_margin(self, turn):
+        return (self.team_1_kings - self.team_2_kings) if turn == 1 else (self.team_2_kings - self.team_1_kings)
+
+    def get_jump_lengths(self, turn):
+        single_jumps = []
+        double_jumps = []
+        triple_jumps = []
+
+        for row in range(NUM_ROWS):
+            for col in range(NUM_COLS):
+                if self.board[row][col] and self.board[row][col].team == turn:
+                    all_jumps = self.get_jumps(row, col, [], turn, self.board[row][col].is_king)
+
+                    # loop through all moves and add to the respective lists
+                    for key, value in all_jumps.items():
+                        if len(value) == 1:
+                            single_jumps.append(key)
+                        elif len(value) == 2:
+                            double_jumps.append(key)
+                        elif len(value) >= 3:
+                            triple_jumps.append(key)
+
+        return single_jumps, double_jumps, triple_jumps
+
+    def get_pieces_in_enemy_half(self, turn):
+        count = 0
+        start = 0 if turn == 1 else NUM_ROWS // 2
+        end = NUM_ROWS // 2 if turn == 1 else NUM_ROWS
+
+        for row in range(start, end):
+                for col in range(NUM_COLS):
+                    if self.board[row][col] and self.board[row][col].team == turn:
+                        count += 1
+
+        return count
