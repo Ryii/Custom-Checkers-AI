@@ -78,16 +78,20 @@ class Game:
         self.possible_moves = {}
 
         self.display_score()
-        self.check_winner()
+        if self.check_winner(self.turn):
+            return
         self.check_draw()
 
-    def check_winner(self):
-        if self.Board.is_winner():
-            if self.Board.is_winner() == 1:
+    def check_winner(self, team):
+        winner = self.Board.winner(team)
+        if winner:
+            if winner == 1:
                 print("Team 1 won!")
             else:
                 print("Team 2 won!")
             self.exit_game()
+            return True
+        return False
             
     def check_draw(self):
         if self.is_draw():
@@ -127,7 +131,7 @@ class Game:
     def get_score(self):
         single_jumps, double_jumps, triple_jumps = self.Board.get_jump_lengths(self.turn)
         return (2 * self.Board.get_piece_margin(self.turn) + 5 * self.Board.get_king_margin(self.turn) + 2 * (len(single_jumps) > 0) +
-            4 * (len(double_jumps) > 0) + 6 * (len(triple_jumps) > 0) + 2 * self.Board.get_pieces_in_enemy_half(self.turn) + 100 * (self.Board.is_winner() == self.turn) + 25 * (self.is_draw()))
+            4 * (len(double_jumps) > 0) + 6 * (len(triple_jumps) > 0) + 2 * self.Board.get_pieces_in_enemy_half(self.turn) + 100 * (self.Board.winner(self.turn) == (2 if self.turn == 1 else 1)) + 25 * (self.is_draw()))
 
     ## Fix exit game
     def exit_game(self):

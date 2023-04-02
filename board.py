@@ -96,12 +96,21 @@ class Board:
                     
             self.board[row][col] = None
 
-    def is_winner(self):
+    def winner(self, team):
+        ## if out of pieces
         if self.team_1_pieces <= 0:
             return 2
         if self.team_2_pieces <= 0:
             return 1
-        return 0
+        
+        ## if no more moves
+        for row in range(NUM_ROWS):
+            for col in range(NUM_COLS):
+                if self.board[row][col] and self.board[row][col].team == team:
+                    if self.get_possible_moves(row, col, team, self.board[row][col].is_king):
+                        return 0
+
+        return 2 if team == 1 else 1
 
 ########################
 # Feature calculations #
